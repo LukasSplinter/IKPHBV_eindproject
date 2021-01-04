@@ -1,0 +1,8 @@
+TODO:
+[X] train_maskdetection.py maken
+[X] dataset bij elkaar + testen
+[X] git regelen
+
+[ ] 3e dimensie toevoegen aan train_maskdetection.py zodat we ook fout gedragen maskers kunnen herkennen
+[ ] maskdetection.py afmaken
+
