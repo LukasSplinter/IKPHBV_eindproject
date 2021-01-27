@@ -13,6 +13,20 @@ import time
 import cv2
 import os
 
+
+#config
+startTextHeight = 20
+config_screenSize = 800
+config_save_ROI_folder = "./data/ROI"
+config_ROI_filetype = ".jpg"
+
+# list with ROIs of faces for game
+faceROIS = {"Mask": [], "No Mask": []}
+
+# clear folder of old ROIS
+for ROIimage in os.listdir(config_save_ROI_folder):
+	os.remove(os.path.join(config_save_ROI_folder, ROIimage))
+
 def detect_and_predict_mask(frame, faceNet, maskNet):
 	# grab the dimensions of the frame and then construct a blob
 	# from it
@@ -103,10 +117,13 @@ time.sleep(2.0)
 
 # loop over the frames from the video stream
 while True:
+	# bool to know wether we can end detection if user desires and continue with game
+	faceFound = False
+
 	# grab the frame from the threaded video stream and resize it
 	# to have a maximum width of 400 pixels
 	frame = vs.read()
-	frame = imutils.resize(frame, width=400)
+	frame = imutils.resize(frame, width=config_screenSize)
 
 	# detect faces in the frame and determine if they are wearing a
 	# face mask or not
@@ -133,9 +150,41 @@ while True:
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
 		cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 
+		#enter faces into ROI list
+			#clear faceROI list to prevent ROIs heaping up
+		faceROIS["Mask"].clear()
+		faceROIS["No Mask"].clear()
+			#add faces to faceROIS object sorted on masked/notmasked
+		faceROIS[label.split(":")[0]].append(frame[startY:endY, startX:endX])
+
+
+
+	if len(locs) > 0:
+		cv2.putText(frame, "Press 'space' to start! | klik op 'spatie' om te beginnen!", (50, 550), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,255,0), 2)
+		faceFound = True
+
 	# show the output frame
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
+
+
+	#//event Handlers//
+
+	# if 'space' pressed AND there was at least one(1) face found, end detection, save faces in root, and start game
+	if faceFound and key == ord(" "):
+		#bit dry but zip() wont work in this instance // oh well
+		#save images to path var 'config_save_ROI_folder'
+		for ROIimage in faceROIS["Mask"]:
+			print("saving ROI mask")
+			ROIname = "Mask" + str(faceROIS["Mask"].index(ROIimage)) + config_ROI_filetype
+			cv2.imwrite(os.path.join(config_save_ROI_folder, ROIname), ROIimage)
+		for ROIimage in faceROIS["No Mask"]:
+			print("saving ROI no mask: " + "No Mask" + str(faceROIS["No Mask"].index(ROIimage)) + config_ROI_filetype)
+			ROIname = "No Mask" + str(faceROIS["No Mask"].index(ROIimage)) + config_ROI_filetype
+			cv2.imwrite(os.path.join(config_save_ROI_folder, ROIname), ROIimage)
+
+		#end loop
+		break
 
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
@@ -144,3 +193,7 @@ while True:
 # do a bit of cleanup
 cv2.destroyAllWindows()
 vs.stop()
+
+#start pygame file
+if faceFound:
+	print("start pygame")
