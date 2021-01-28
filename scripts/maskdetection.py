@@ -12,6 +12,7 @@ import imutils
 import time
 import cv2
 import os
+from sys import exit
 
 
 #config
@@ -98,7 +99,14 @@ ap.add_argument("-m", "--model", type=str,
 	help="path to trained face mask detector model")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
 	help="minimum probability to filter weak detections")
+ap.add_argument("--skipsnake", type=bool, default=False)
 args = vars(ap.parse_args())
+
+# if 'skipsnake' argument is added, skip straight to snake, for testing purposes
+if args["skipsnake"]:
+	os.system("python " + os.getcwd() + "\\scripts\\snake.py")
+	exit()
+
 
 # load our serialized face detector model from disk
 print("[INFO] loading face detector model...")
@@ -196,5 +204,4 @@ vs.stop()
 
 #start pygame file
 if faceFound:
-	print(os.getcwd())
 	os.system("python " + os.getcwd() + "\\scripts\\snake.py")

@@ -2,7 +2,7 @@ from pygame.locals import *
 from random import randint
 import pygame
 import time
-from os import getcwd
+import os
 
 
 class Syringe:
@@ -118,11 +118,32 @@ class App:
         pygame.init()
         self._display_surf = pygame.display.set_mode((self.windowWidth, self.windowHeight), pygame.HWSURFACE)
 
-        pygame.display.set_caption('Pygame pythonspot.com example')
+        pygame.display.set_caption('corona snake')
         self._running = True
-        self._image_surf = pygame.image.load(getcwd() + "\\images\\snake.png").convert()
-        self._syringe_surf = pygame.image.load(getcwd() + "\\images\\apple.png").convert()
-        self._virus_surf = pygame.image.load(getcwd() + "\\images\\virus.png").convert()
+        self._syringe_surf = pygame.image.load(os.getcwd() + "\\images\\apple.png").convert()
+        self._virus_surf = pygame.image.load(os.getcwd() + "\\images\\virus.png").convert()
+
+        # change parameters to make game more difficult if user isnt wearing mask
+            # read from ./ROI file to see if player wears mask
+        if len(os.listdir(os.getcwd() + "\\data\\ROI")) < 1:
+            # no images saved from maskdetection.py, fall back to default prites
+            print("No faces in ROI folder found, falling back to default sprites")
+            self._image_surf = pygame.image.load(os.getcwd() + "\\images\\snake.png").convert()
+        else:
+            faceFileName = os.listdir(os.getcwd() + "\\data\\ROI")[0]
+            #set face in ROI folder as snake sprite and resize to 44px x 44px
+            self._image_surf = pygame.transform.scale(pygame.image.load(os.getcwd() + "\\data\\ROI\\" + faceFileName).convert(), (44, 44))
+            # see if face in ROI folder is wearing mask
+                #if filename contains 'No Mask' > user isnt wearing mask
+            if "No Mask" in faceFileName:
+                # if wearing no mask > make game harder
+                print("No mask")
+                self.player.length = 2
+                self.player.step = self.player.step * 2
+            else:
+                # if wearing mask > make game easier
+                print("Mask")
+                self.player.length = 4
 
     def on_event(self, event):
         if event.type == QUIT:
