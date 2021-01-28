@@ -196,4 +196,5 @@ vs.stop()
 
 #start pygame file
 if faceFound:
-	print("start pygame")
+	print(os.getcwd())
+	os.system("python " + os.getcwd() + "\\scripts\\snake.py")

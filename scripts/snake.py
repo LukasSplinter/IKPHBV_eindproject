@@ -2,6 +2,7 @@ from pygame.locals import *
 from random import randint
 import pygame
 import time
+from os import getcwd
 
 
 class Syringe:
@@ -119,9 +120,9 @@ class App:
 
         pygame.display.set_caption('Pygame pythonspot.com example')
         self._running = True
-        self._image_surf = pygame.image.load("../images/snake.png").convert()
-        self._syringe_surf = pygame.image.load("../images/apple.png").convert()
-        self._virus_surf = pygame.image.load("../images/virus.png").convert()
+        self._image_surf = pygame.image.load(getcwd() + "\\images\\snake.png").convert()
+        self._syringe_surf = pygame.image.load(getcwd() + "\\images\\apple.png").convert()
+        self._virus_surf = pygame.image.load(getcwd() + "\\images\\virus.png").convert()
 
     def on_event(self, event):
         if event.type == QUIT:
