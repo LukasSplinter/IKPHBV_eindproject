@@ -5,10 +5,10 @@ TODO:
 [X] maskdetection.py afmaken
 [X] linken pygame/snake en maskdetection.py
 
-[cancelled] QoL : zorg dat maskdetection gerund kan worden buiten cmd on (met runknop eg)
+[DONE] QoL : zorg dat maskdetection gerund kan worden buiten cmd on (met runknop eg)
      ↳ bezig met main.py zo te schrijven dat hij kan herkennen of hij via cmd of runkop gerund is, gezien dit de working directory aanpast en de scripts verneukt.
      ↳ Al krijg ik niet werkend:
-          ↳ [ ] laat main.py weigeren te runnen als hij niet gerund is via goede directory/cmd : .getcwd() > om errors tegen te gaan
+          ↳ [X] laat main.py weigeren te runnen als hij niet gerund is via goede directory/cmd : .getcwd() > om errors tegen te gaan
 
 [ ] pygame snake afmaken
     [X] snake lastiger maken afh. van of persoon masker heeft of niet

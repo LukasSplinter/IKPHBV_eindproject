@@ -19,19 +19,17 @@ from sys import exit
 startTextHeight = 20
 config_screenSize = 800
 config_save_ROI_folder = "./data/ROI"
-config_ROI_filetype = ".jpg"
+config_ROI_filetype = ".png"
 
 # list with ROIs of faces for game
 faceROIS = {"Mask": [], "No Mask": []}
 
-# print("[INFO] Checking working directory")
-# if os.getcwd().split("\\")[-1] is not "ikphbv_eindproject":
-# 	print("[INFO] Working directory check came out false, resetting to xxx/ikphbv_eindproject")
-# 	os.chdir("\\".join(os.getcwd().split("\\")[0:-1]))
-
-
 # clear folder of old ROIS
 for ROIimage in os.listdir(config_save_ROI_folder):
+	#ignore .gitkeep file
+	print(ROIimage)
+	if "gitkeep" in ROIimage:
+		continue
 	os.remove(os.path.join(config_save_ROI_folder, ROIimage))
 
 def detect_and_predict_mask(frame, faceNet, maskNet):

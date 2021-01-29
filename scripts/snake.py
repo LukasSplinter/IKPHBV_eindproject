@@ -91,6 +91,8 @@ class Player:
 
 
 class Game:
+    amountOfVirus = 1
+
     def isCollision(self, x1, y1, x2, y2, bsize):
         if x1 >= x2 and x1 <= x2 + bsize:
             if y1 >= y2 and y1 <= y2 + bsize:
@@ -124,17 +126,20 @@ class App:
         self._virus_surf = pygame.image.load(os.getcwd() + "\\images\\virus.png").convert()
 
         # change parameters to make game more difficult if user isnt wearing mask
-            # read from ./ROI file to see if player wears mask
-        if len(os.listdir(os.getcwd() + "\\data\\ROI")) < 1:
+        # read from ./ROI file to see if player wears mask
+        if len(os.listdir(os.getcwd() + "\\data\\ROI")) < 2:
             # no images saved from maskdetection.py, fall back to default prites
-            print("No faces in ROI folder found, falling back to default sprites")
+            print("[INFO] No faces in ROI folder found, falling back to default sprites")
             self._image_surf = pygame.image.load(os.getcwd() + "\\images\\snake.png").convert()
         else:
-            faceFileName = os.listdir(os.getcwd() + "\\data\\ROI")[0]
-            #set face in ROI folder as snake sprite and resize to 44px x 44px
-            self._image_surf = pygame.transform.scale(pygame.image.load(os.getcwd() + "\\data\\ROI\\" + faceFileName).convert(), (44, 44))
+            faceFileName = os.listdir(os.getcwd() + "\\data\\ROI")[1]   #index [1] to avoid using .gitkeep file
+            # set face in ROI folder as snake sprite and resize to 44px x 44px
+
+            self._image_surf = pygame.transform.scale(
+                pygame.image.load(os.getcwd() + "\\data\\ROI\\" + faceFileName).convert(), (44, 44))
+
             # see if face in ROI folder is wearing mask
-                #if filename contains 'No Mask' > user isnt wearing mask
+            # if filename contains 'No Mask' > user isnt wearing mask
             if "No Mask" in faceFileName:
                 # if wearing no mask > make game harder
                 print("No mask")
