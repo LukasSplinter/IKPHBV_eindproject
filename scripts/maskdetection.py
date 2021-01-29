@@ -172,7 +172,7 @@ while True:
 
 
 	if len(locs) > 0:
-		cv2.putText(frame, "Press 'space' to start! | klik op 'spatie' om te beginnen!", (50, 550), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,255,0), 2)
+		cv2.putText(frame, "Press 'space' to start! | klik op 'spatie' om te beginnen!", (50, 550), cv2.FONT_HERSHEY_COMPLEX, 0.75, (0,255,0), 2)
 		faceFound = True
 
 	# show the output frame

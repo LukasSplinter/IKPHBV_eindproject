@@ -30,6 +30,10 @@ class Virus:
     def draw(self, surface, image):
         surface.blit(image, (self.x, self.y))
 
+    def redistribute(self):
+        self.x, self.y = randint(App.spawnLimitVirus["X1"], App.spawnLimitVirus["X2"]) * self.step, \
+                         randint(App.spawnLimitVirus["Y1"], App.spawnLimitVirus["Y2"] * self.step)
+
 
 class Player:
     x = [0]
@@ -104,11 +108,33 @@ class App:
     player = 0
     syringe = 0
 
+    # ranges 0 <-> 29 || 0 ↨ 19
+    # max range = windowWidth(or height)/44(tilesize)-1(index)
+    spawnLimitSyringes = {"X1": 0, "X2": 29,
+                          "Y1": 0, "Y2": 19}
+
+    spawnLimitVirus = {"X1": 0, "X2": 29,
+                       "Y1": 0, "Y2": 19}
+
+    #config viruses
     amountOfVirus = 2
     viruses = []
 
+    #config syringes
     amountOfSyringe = 3
     syringes = []
+
+    #config easymode (if user wears mask)
+    easyMode_amountOfVirus = 3
+    easyMode_amountOfSyringe = 4
+
+    #config hardmode (if user does NOT wear mask)
+    hardMode_amountOfVirus = 6
+    hardMode_amountOfSyringe = 1
+
+    #config for change of reshuffling/relocating all viruses on pickup of a syringe
+    #used to make game harder
+    percent_change_reshuffle_viruses_on_syringe_pickup = 0
 
     def __init__(self):
         self._running = True
@@ -117,16 +143,14 @@ class App:
         self._syringe_surf = None
         self.game = Game()
         self.player = Player(3)
-        # self.syringe = Syringe(5, 5)
-        # self.virus = Virus(29, 19)
 
         for virus in range(0, App.amountOfVirus):
-            #ranges 0 <-> 29 || 0 ↨ 19
-            virus = Virus(randint(0, 29), randint(0, 19))
+            virus = Virus(randint(App.spawnLimitVirus["X1"], App.spawnLimitVirus["X2"]),
+                          randint(App.spawnLimitVirus["Y1"], App.spawnLimitVirus["Y2"]))
             App.viruses.append(virus)
         for syringe in range(0, App.amountOfSyringe):
-            # ranges 0 <-> 29 || 0 ↨ 19
-            syringe = Syringe(randint(0, 29), randint(0, 19))
+            syringe = Syringe(randint(App.spawnLimitVirus["X1"], App.spawnLimitVirus["X2"]),
+                              randint(App.spawnLimitVirus["Y1"], App.spawnLimitVirus["Y2"]))
             App.syringes.append(syringe)
 
     def on_init(self):
@@ -135,8 +159,10 @@ class App:
 
         pygame.display.set_caption('corona snake')
         self._running = True
-        self._syringe_surf = pygame.transform.scale(pygame.image.load(os.getcwd() + "\\images\\syringe.png").convert(), (44,44))
-        self._virus_surf = pygame.transform.scale(pygame.image.load(os.getcwd() + "\\images\\corona.png").convert(), (44,44))
+        self._syringe_surf = pygame.transform.scale(pygame.image.load(os.getcwd() + "\\images\\syringe.png").convert(),
+                                                    (44, 44))
+        self._virus_surf = pygame.transform.scale(pygame.image.load(os.getcwd() + "\\images\\corona.png").convert(),
+                                                  (44, 44))
 
         # change parameters to make game more difficult if user isnt wearing mask
         # read from ./ROI file to see if player wears mask
@@ -145,7 +171,7 @@ class App:
             print("[INFO] No faces in ROI folder found, falling back to default sprites")
             self._image_surf = pygame.image.load(os.getcwd() + "\\images\\snake.png").convert()
         else:
-            faceFileName = os.listdir(os.getcwd() + "\\data\\ROI")[1]   #index [1] to avoid using .gitkeep file
+            faceFileName = os.listdir(os.getcwd() + "\\data\\ROI")[1]  # index [1] to avoid using .gitkeep file
             # set face in ROI folder as snake sprite and resize to 44px x 44px
 
             self._image_surf = pygame.transform.scale(
@@ -155,16 +181,49 @@ class App:
             # if filename contains 'No Mask' > user isnt wearing mask
             if "No Mask" in faceFileName:
                 # if wearing no mask > make game harder
-                print("No mask")
+
+                #make player smaller to start
                 self.player.length = 2
-                App.viruses = 6
-                App.syringes = 1
+
+                # clear viruses and respawn according to hardmode config
+                App.viruses.clear()
+                for virus in range(0, App.hardMode_amountOfVirus):
+                    # ranges 0 <-> 29 || 0 ↨ 19
+                    virus = Virus(randint(App.spawnLimitVirus["X1"], App.spawnLimitVirus["X2"]),
+                                  randint(App.spawnLimitVirus["Y1"], App.spawnLimitVirus["Y2"]))
+                    App.viruses.append(virus)
+
+                # clear syringes and respawn according to hardmode config
+                App.syringes.clear()
+                for syringe in range(0, App.hardMode_amountOfSyringe):
+                    # ranges 0 <-> 29 || 0 ↨ 19
+                    syringe = Syringe(randint(App.spawnLimitVirus["X1"], App.spawnLimitVirus["X2"]),
+                                      randint(App.spawnLimitVirus["Y1"], App.spawnLimitVirus["Y2"]))
+                    App.syringes.append(syringe)
+
+                #increase reshuffle change on syringe pickup
+                App.percent_change_reshuffle_viruses_on_syringe_pickup = 33
+
+
             else:
                 # if wearing mask > make game easier
-                print("Mask")
+
+                #make player longer to start
                 self.player.length = 4
-                App.viruses = 3
-                App.syringes = 4
+
+                #clear viruses and respawn according to easymode config
+                App.viruses.clear()
+                for virus in range(0, App.easyMode_amountOfVirus):
+                    virus = Virus(randint(App.spawnLimitVirus["X1"], App.spawnLimitVirus["X2"]),
+                                  randint(App.spawnLimitVirus["Y1"], App.spawnLimitVirus["Y2"]))
+                    App.viruses.append(virus)
+
+                # clear syringes and respawn according to easymode config
+                App.syringes.clear()
+                for syringe in range(0, App.easyMode_amountOfSyringe):
+                    syringe = Syringe(randint(App.spawnLimitVirus["X1"], App.spawnLimitVirus["X2"]),
+                                      randint(App.spawnLimitVirus["Y1"], App.spawnLimitVirus["Y2"]))
+                    App.syringes.append(syringe)
 
     def on_event(self, event):
         if event.type == QUIT:
@@ -185,6 +244,11 @@ class App:
                     # self.virus.x = randint(1, 29) * 44
                     # self.virus.y = randint(1, 19) * 44
                     self.player.length = self.player.length + 1
+
+                    if randint(1, 100) <= App.percent_change_reshuffle_viruses_on_syringe_pickup:
+                        for virus in App.viruses:
+                            virus.redistribute()
+
         # does snake get corona
         for i in range(0, self.player.length):
             for virus in App.viruses:
@@ -253,6 +317,7 @@ class App:
 
             time.sleep(50.0 / 1000.0);
         self.on_cleanup()
+
 
 
 if __name__ == "__main__":
