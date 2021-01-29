@@ -21,6 +21,12 @@ import numpy as np
 import argparse
 import os
 
+print("[INFO] Checking working directory")
+if os.getcwd().split("\\")[-1] is not "ikphbv_eindproject":
+    print("[INFO] Working directory check came out false, resetting to ../ikphbv_eindproject")
+    os.chdir("\\".join(os.getcwd().split("\\")[0:-1]))
+    print(os.getcwd())
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--dataset", required=True,
@@ -140,3 +146,6 @@ plt.xlabel("Epoch #")
 plt.ylabel("Loss/Accuracy")
 plt.legend(loc="lower left")
 plt.savefig(args["plot"])
+
+# run main.py to start continue working chain
+os.system("python " + os.getcwd() + "\\scripts\\main.py")

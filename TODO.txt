@@ -6,6 +6,7 @@ TODO:
 [X] linken pygame/snake en maskdetection.py
 
 [ ] QoL : zorg dat maskdetection gerund kan worden buiten cmd on (met runknop eg)
+
 [ ] pygame snake afmaken
     [X] snake lastiger maken afh. van of persoon masker heeft of niet
     [X] gezichten gebruiken user
