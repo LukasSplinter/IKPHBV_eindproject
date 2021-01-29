@@ -91,8 +91,6 @@ class Player:
 
 
 class Game:
-    amountOfVirus = 1
-
     def isCollision(self, x1, y1, x2, y2, bsize):
         if x1 >= x2 and x1 <= x2 + bsize:
             if y1 >= y2 and y1 <= y2 + bsize:
@@ -106,6 +104,12 @@ class App:
     player = 0
     syringe = 0
 
+    amountOfVirus = 2
+    viruses = []
+
+    amountOfSyringe = 3
+    syringes = []
+
     def __init__(self):
         self._running = True
         self._display_surf = None
@@ -113,8 +117,17 @@ class App:
         self._syringe_surf = None
         self.game = Game()
         self.player = Player(3)
-        self.syringe = Syringe(5, 5)
-        self.virus = Virus(12, 5)
+        # self.syringe = Syringe(5, 5)
+        # self.virus = Virus(29, 19)
+
+        for virus in range(0, App.amountOfVirus):
+            #ranges 0 <-> 29 || 0 ↨ 19
+            virus = Virus(randint(0, 29), randint(0, 19))
+            App.viruses.append(virus)
+        for syringe in range(0, App.amountOfSyringe):
+            # ranges 0 <-> 29 || 0 ↨ 19
+            syringe = Syringe(randint(0, 29), randint(0, 19))
+            App.syringes.append(syringe)
 
     def on_init(self):
         pygame.init()
@@ -122,8 +135,8 @@ class App:
 
         pygame.display.set_caption('corona snake')
         self._running = True
-        self._syringe_surf = pygame.image.load(os.getcwd() + "\\images\\apple.png").convert()
-        self._virus_surf = pygame.image.load(os.getcwd() + "\\images\\virus.png").convert()
+        self._syringe_surf = pygame.transform.scale(pygame.image.load(os.getcwd() + "\\images\\syringe.png").convert(), (44,44))
+        self._virus_surf = pygame.transform.scale(pygame.image.load(os.getcwd() + "\\images\\corona.png").convert(), (44,44))
 
         # change parameters to make game more difficult if user isnt wearing mask
         # read from ./ROI file to see if player wears mask
@@ -144,11 +157,14 @@ class App:
                 # if wearing no mask > make game harder
                 print("No mask")
                 self.player.length = 2
-                self.player.step = self.player.step * 2
+                App.viruses = 6
+                App.syringes = 1
             else:
                 # if wearing mask > make game easier
                 print("Mask")
                 self.player.length = 4
+                App.viruses = 3
+                App.syringes = 4
 
     def on_event(self, event):
         if event.type == QUIT:
@@ -162,16 +178,18 @@ class App:
 
         # does snake eat syringe?
         for i in range(0, self.player.length):
-            if self.game.isCollision(self.syringe.x, self.syringe.y, self.player.x[i], self.player.y[i], 44):
-                self.syringe.x = randint(1, 29) * 44
-                self.syringe.y = randint(1, 19) * 44
-                self.virus.x = randint(1, 29) * 44
-                self.virus.y = randint(1, 19) * 44
-                self.player.length = self.player.length + 1
+            for syringe in App.syringes:
+                if self.game.isCollision(syringe.x, syringe.y, self.player.x[i], self.player.y[i], 44):
+                    syringe.x = randint(1, 29) * 44
+                    syringe.y = randint(1, 19) * 44
+                    # self.virus.x = randint(1, 29) * 44
+                    # self.virus.y = randint(1, 19) * 44
+                    self.player.length = self.player.length + 1
         # does snake get corona
         for i in range(0, self.player.length):
-            if self.game.isCollision(self.virus.x, self.virus.y, self.player.x[i], self.player.y[i], 44):
-                exit(0)
+            for virus in App.viruses:
+                if self.game.isCollision(virus.x, virus.y, self.player.x[i], self.player.y[i], 44):
+                    exit(0)
 
         # does snake collide with itself?
         for i in range(2, self.player.length):
@@ -195,8 +213,13 @@ class App:
     def on_render(self):
         self._display_surf.fill((0, 0, 0))
         self.player.draw(self._display_surf, self._image_surf)
-        self.syringe.draw(self._display_surf, self._syringe_surf)
-        self.virus.draw(self._display_surf, self._virus_surf)
+        # self.syringe.draw(self._display_surf, self._syringe_surf)
+        # self.virus.draw(self._display_surf, self._virus_surf)
+
+        for virus in App.viruses:
+            virus.draw(self._display_surf, self._virus_surf)
+        for syringe in App.syringes:
+            syringe.draw(self._display_surf, self._syringe_surf)
         pygame.display.flip()
 
     def on_cleanup(self):
