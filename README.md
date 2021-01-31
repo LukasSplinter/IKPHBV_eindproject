@@ -19,6 +19,7 @@
 
     ['COVID-19: Face Mask Detector with OpenCV, Keras/TensorFlow, and Deep Learning' door Adrian Rosebrock](https://www.pyimagesearch.com/2020/05/04/covid-19-face-mask-detector-with-opencv-keras-tensorflow-and-deep-learning/)
     
+    https://pythonspot.com/snake-with-pygame/
 # BESTANDEN:
 
   train_maskdetection.py
@@ -32,7 +33,15 @@
 
   maskdetection.py
   
-    [TODO] Dit is het bestand die het neurale netwerk runt, gebruikt het .model bestand hierboven om te kijken of er op de webcam iemand is
+    Dit is het bestand die het neurale netwerk runt, gebruikt het .model bestand hierboven om te kijken of er op de webcam iemand is
     die een mondkapje draagt of niet.
     
-   
+  snake.py
+    
+    Dit is het bestand die de logica bevat voor het spel 'snake'. Deze wordt gerund door 'maskdetection.py' zodra de gebruiker op spatie
+    heeft geklikt en zijn/haar gezicht ingescand is.
+    
+  main.py
+    
+    Dit is het bestand die alles aanstuurd, deze kijkt ook of het model aanwezig is, en runt het train-script zo niet. 
+    
